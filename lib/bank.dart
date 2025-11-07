@@ -25,15 +25,30 @@ abstract class BankAccount {
     // using .isNotEmpty to check the property of name whether it is True or False
     if (name.isNotEmpty) {
       _holderName = name;
+    } else {
+      print("Error: Name cannot be empty.");
     }
+  }
+
+  // Validation helper method
+  bool isValidAmount(double amount) {
+    if (amount <= 0) {
+      print("Error: Amount must be greater than 0.");
+      return false;
+    }
+    return true;
   }
 
   // Protected method to modify balance internally
   void updateBalance(double amount) {
+    if (amount == 0) {
+      print("WarningL: Zero amount update ignored.");
+      return;
+    }
     _balance += amount;
   }
 
-    // Creating Transaction history
+  // Creating Transaction history
   List<String> transactionHistory = [];
 
   void addTransaction(String message) {
@@ -68,40 +83,44 @@ abstract class BankAccount {
 // Creating a three types of accounts that inherit from BankAccount
 
 // 1. Saving Account
+
 class SavingAccount extends BankAccount implements InterestBearing {
   static const double minBalance = 500.0;
   int withdrawCount = 0;
 
-  SavingAccount(super.number, super.name, super._balance);
+  SavingAccount(super.number, super.name, super.balance);
 
   @override
   void deposit(double amount) {
+    if (!isValidAmount(amount)) return;
+
     updateBalance(amount);
+    addTransaction("Deposited \$${amount}");
     print("Deposited \$${amount}. New balance: \$${balance}");
   }
 
   @override
   void withdraw(double amount) {
-    if (withdrawCount >= 3) {
-      print("Withdrawal limit reached (3 per month.");
+    if (!isValidAmount(amount)) return;
 
+    if (withdrawCount >= 3) {
+      print("Error: Withdrawal limit reached (3 per month).");
       return;
     }
 
     if (balance - amount < minBalance) {
-      print("Cannot withdraw. Minimum balance of \$500 required.");
+      print("Error: Minimum balance of \$500 required.");
       return;
     }
 
     updateBalance(-amount);
     withdrawCount++;
-    print("Withdrawal $amount . New balance: \$$balance");
+    addTransaction("Withdrawn \$$amount");
+    print("Withdrawn \$$amount. New balance: \$$balance");
   }
 
   @override
-  double calculateInterest() {
-    return balance * 0.02;
-  }
+  double calculateInterest() => balance * 0.02;
 }
 
 // Checking Account
@@ -111,18 +130,27 @@ class CheckingAccount extends BankAccount {
 
   @override
   void deposit(double amount) {
+    if (!isValidAmount(amount)) return;
+
     updateBalance(amount);
+    print("Deposited \$$amount. New balance: \$$balance");
+
     print("Deposited \$$amount. New balance: \$$balance");
   }
 
   @override
   void withdraw(double amount) {
+    if (!isValidAmount(amount)) return;
+
     updateBalance(-amount);
-    print("Withdrawn \$${amount}. New balance: \$${balance}");
+    addTransaction("Withdrawn \$$amount");
+    print("Withdrawn \$$amount. New balance: \$$balance");
 
     if (balance < 0) {
       updateBalance(-35); // overdraft fee
-      print("Overdraft fee applied! New balance: \$${balance}");
+
+      addTransaction("overdraft fee -35");
+      print("Overdraft fee applied! New balance: \$$balance");
     }
   }
 }
@@ -136,19 +164,25 @@ class PremiumAccount extends BankAccount implements InterestBearing {
 
   @override
   void deposit(double amount) {
+    if (!isValidAmount(amount)) return;
+
     updateBalance(amount);
+    addTransaction("Deposited \$$amount");
     print("Deposited \$${amount}. New balance: \$${balance}");
   }
 
   @override
   void withdraw(double amount) {
+    if (!isValidAmount(amount)) return;
+
     if (balance - amount < minBalance) {
       print("Cannot withdraw. Minimum balance of \$10,000 required.");
       return;
     }
 
     updateBalance(-amount);
-    print("Withdrawn \$${amount}. New balance: \$${balance}");
+    addTransaction("Withdrawn \$$amount");
+    print("Withdrawn \$$amount. New balance: \$$balance");
   }
 
   @override
@@ -187,7 +221,7 @@ class Bank {
     sender.withdraw(amount);
     receiver.deposit(amount);
 
-    print("Transferred \$${amount} from $fromAcc to $toAcc");
+    print("Transferred \$$amount from $fromAcc to $toAcc");
   }
 
   void generateReport() {
@@ -217,22 +251,28 @@ class StudentAccount extends BankAccount {
 
   @override
   void deposit(double amount) {
+    if (!isValidAmount(amount)) return;
+
     if (balance + amount > maxBalance) {
       print("Cannot deposit. Max balance of \$5000 exceeded.");
       return;
     }
     updateBalance(amount);
-    print("Deposited \$${amount}. New balance: \$${balance}");
+    addTransaction("Deposited \$$amount");
+    print("Deposited \$$amount. New balance: \$$balance");
   }
 
   @override
   void withdraw(double amount) {
+    if (!isValidAmount(amount)) return;
+
     if (amount > balance) {
       print("Insufficient funds.");
       return;
     }
     updateBalance(-amount);
-    print("Withdrawn \$${amount}. New balance: \$${balance}");
+    addTransaction("Withdrawn \$$amount");
+    print("Withdrawn \$$amount. New balance: \$$balance");
   }
 }
 
