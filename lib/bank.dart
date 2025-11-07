@@ -33,7 +33,23 @@ abstract class BankAccount {
     _balance += amount;
   }
 
+    // Creating Transaction history
+  List<String> transactionHistory = [];
 
+  void addTransaction(String message) {
+    transactionHistory.add("${DateTime.now()} : $message");
+  }
+
+  void showTransactionHistory() {
+    print("\nTransaction History for $holderName ($accountNumber):");
+    if (transactionHistory.isEmpty) {
+      print("No transactions recorded.");
+    } else {
+      for (var t in transactionHistory) {
+        print("- $t");
+      }
+    }
+  }
 
   // Abstract method
   void deposit(double amount);
