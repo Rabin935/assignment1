@@ -185,20 +185,18 @@ void main() {
   Bank bank = Bank();
 
   var acc1 = SavingAccount("S101", "Rabin Tamang", 1500);
-  var acc2 = CheckingAccount("C202", "Dipen Tamang", 200);
-  var acc3 = PremiumAccount("P303", "Joseph Tamang", 15000);
+  // var acc2 = CheckingAccount("C202", "Dipen Tamang", 200);
+  // var acc3 = PremiumAccount("P303", "Joseph Tamang", 15000);
 
   bank.createAccount(acc1);
-  bank.createAccount(acc2);
-  bank.createAccount(acc3);
+  // bank.createAccount(acc2);
+  // bank.createAccount(acc3);
 
   // Test operations
   acc1.withdraw(300);
   acc1.withdraw(200);
   acc1.withdraw(100);
   acc1.withdraw(50); // 4th attempt → blocked
-
-  acc2.withdraw(300); // causes overdraft
 
   bank.transfer("P303", "S101", 2000);
 
