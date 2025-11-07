@@ -33,8 +33,11 @@ abstract class BankAccount {
     _balance += amount;
   }
 
+
+
   // Abstract method
   void deposit(double amount);
+
   void withdraw(double amount);
 
   // Method to display account information
@@ -176,6 +179,44 @@ class Bank {
     for (var acc in accounts) {
       acc.displayInfo();
     }
+  }
+
+  void applyMonthlyInterest() {
+    for (final acc in accounts) {
+      if (acc is InterestBearing) {
+        final interest = (acc as InterestBearing).calculateInterest();
+        acc.deposit(interest); // deposit() exists on BankAccount
+        print(
+          "Interest of \$${interest.toStringAsFixed(2)} applied to ${acc.accountNumber}",
+        );
+      }
+    }
+  }
+}
+
+class StudentAccount extends BankAccount {
+  static const double maxBalance = 5000;
+
+  StudentAccount(super.number, super.name, super.balance);
+
+  @override
+  void deposit(double amount) {
+    if (balance + amount > maxBalance) {
+      print("Cannot deposit. Max balance of \$5000 exceeded.");
+      return;
+    }
+    updateBalance(amount);
+    print("Deposited \$${amount}. New balance: \$${balance}");
+  }
+
+  @override
+  void withdraw(double amount) {
+    if (amount > balance) {
+      print("Insufficient funds.");
+      return;
+    }
+    updateBalance(-amount);
+    print("Withdrawn \$${amount}. New balance: \$${balance}");
   }
 }
 
